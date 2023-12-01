@@ -7,18 +7,9 @@ import (
 )
 
 func main() {
-	day1InputPath := "./day1/data/day1.txt"
-	sum, err := day1.Part1(day1InputPath)
-	if err != nil {
-		fmt.Printf("Error in Part 1: %s\n", err)
-	} else {
-		fmt.Printf("Answer to Part 1 is %d\n", sum)
-	}
+	day1.RunDay1(GetInputDay(1))
+}
 
-	sum, err = day1.Part2(day1InputPath)
-	if err != nil {
-		fmt.Printf("Error in Part 2: %s\n", err)
-	} else {
-		fmt.Printf("Answer to Part 2 is %d\n", sum)
-	}
+func GetInputDay(day int) string {
+	return fmt.Sprintf("./day%d/data/day%d.txt", day, day)
 }

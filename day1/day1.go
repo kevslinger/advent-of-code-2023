@@ -2,10 +2,27 @@ package day1
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
 	"unicode"
 )
+
+func RunDay1(path string) {
+	sum, err := Part1(path)
+	if err != nil {
+		fmt.Printf("Error in Part 1: %s\n", err)
+	} else {
+		fmt.Printf("Answer to Part 1 is %d\n", sum)
+	}
+
+	sum, err = Part2(path)
+	if err != nil {
+		fmt.Printf("Error in Part 2: %s\n", err)
+	} else {
+		fmt.Printf("Answer to Part 2 is %d\n", sum)
+	}
+}
 
 func Part1(path string) (int, error) {
 	file, err := os.Open(path)
