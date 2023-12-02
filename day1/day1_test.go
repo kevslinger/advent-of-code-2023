@@ -13,7 +13,7 @@ func TestDay1Part1(t *testing.T) {
 		log.Fatalf("Error processing part 1: %s", err)
 	}
 	expected := 142
-	assert.Equal(t, sum, expected, "Sum is %d but should be %d", sum, expected)
+	assert.Equal(t, expected, sum, "Sum is %d but should be %d", sum, expected)
 }
 
 func TestDay1Part2(t *testing.T) {
@@ -22,5 +22,5 @@ func TestDay1Part2(t *testing.T) {
 		log.Fatalf("Error processing part 2: %s", err)
 	}
 	expected := 281
-	assert.Equal(t, sum, expected, "Sum is %d but should be %d", sum, expected)
+	assert.Equal(t, expected, sum, "Sum is %d but should be %d", sum, expected)
 }
