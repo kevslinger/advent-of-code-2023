@@ -2,7 +2,6 @@ package day2
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -15,6 +14,7 @@ func RunDay2(path string) {
 	file, err := os.Open(path)
 	if err != nil {
 		fmt.Printf("Error reading file for Day 2: %s\n", err)
+		return
 	}
 	defer file.Close()
 
@@ -44,7 +44,7 @@ func GetMatchers() [3]*regexp.Regexp {
 	return [3]*regexp.Regexp{
 		regexp.MustCompile("[0-9]+ red"),
 		regexp.MustCompile("[0-9]+ green"),
-		regexp.MustCompile("[0-9]+ blue")
+		regexp.MustCompile("[0-9]+ blue"),
 	}
 }
 
