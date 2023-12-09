@@ -3,20 +3,22 @@ package day1
 import (
 	"bufio"
 	"fmt"
-	"os"
+	"io"
 	"strings"
 	"unicode"
+
+	"github.com/kevslinger/advent-of-code-2023/runner"
 )
 
 func RunDay1(path string) {
-	sum, err := Part1(path)
+	sum, err := runner.RunPart(path, Part1)
 	if err != nil {
 		fmt.Printf("Error in Part 1: %s\n", err)
 	} else {
 		fmt.Printf("Answer to Part 1 is %d\n", sum)
 	}
 
-	sum, err = Part2(path)
+	sum, err = runner.RunPart(path, Part2)
 	if err != nil {
 		fmt.Printf("Error in Part 2: %s\n", err)
 	} else {
@@ -24,13 +26,7 @@ func RunDay1(path string) {
 	}
 }
 
-func Part1(path string) (int, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return -1, err
-	}
-	defer file.Close()
-
+func Part1(file io.Reader) (int, error) {
 	var sum int
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -51,13 +47,7 @@ func Part1(path string) (int, error) {
 	return sum, nil
 }
 
-func Part2(path string) (int, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return -1, err
-	}
-	defer file.Close()
-
+func Part2(file io.Reader) (int, error) {
 	var sum int
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
