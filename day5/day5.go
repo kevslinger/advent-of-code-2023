@@ -50,15 +50,63 @@ func Part1(file io.Reader) (int, error) {
 	}
 	locationNum := -1
 	for _, seed := range seeds {
-		val := seed
-		for _, interval := range intervals {
-			val = BinarySearch(interval, val)
-		}
+		val := GetSeedLocation(seed, intervals)
 		if val < locationNum || locationNum < 0 {
 			locationNum = val
 		}
 	}
 
+	return locationNum, nil
+}
+
+func Part2(file io.Reader) (int, error) {
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+	line := scanner.Text()
+	toks := strings.Split(line, " ")
+	seeds := make([][2]int, (len(toks)-1)/2)
+	for idx, tok := range toks[1:] {
+		if idx%2 == 1 {
+			continue
+		}
+		seedStart, err := strconv.Atoi(tok)
+		if err != nil {
+			return -1, err
+		}
+		//fmt.Printf("SeedStart is %d\n", seedStart)
+		seedEnd, err := strconv.Atoi(toks[idx+2])
+		if err != nil {
+			return -1, err
+		}
+		//fmt.Printf("SeedEnd is %d\n", seedEnd)
+		seeds[idx/2] = [2]int{seedStart, seedEnd}
+	}
+	//fmt.Printf("Seeds: %#v\n", seeds)
+
+	intervals := make([]ByDest, 7)
+	for i := 0; i < 7; i++ {
+		scanner.Scan()
+		m, err := ParseIntervals(scanner)
+		if err != nil {
+			return -1, err
+		}
+		intervals[i] = m
+	}
+	locationNum := -1
+	// TODO: This ends up in a loop that takes too long
+	// We can be smarter about this by caching the pathways we've
+	// seen before
+	// And even smarter by computing the next pathway which will actually change anything...
+	for _, seedRange := range seeds {
+		for i := seedRange[0]; i < seedRange[0]+seedRange[1]; i++ {
+			val := GetSeedLocation(i, intervals)
+			//fmt.Printf("Val is %d locationNum is %d\n", val, locationNum)
+			if val < locationNum || locationNum < 0 {
+				locationNum = val
+			}
+		}
+
+	}
 	return locationNum, nil
 }
 
@@ -113,6 +161,13 @@ func BinarySearch(interval ByDest, val int) int {
 			// In range
 			return interval[midPt].Dest + (val - interval[midPt].Src)
 		}
+	}
+	return val
+}
+
+func GetSeedLocation(val int, intervals []ByDest) int {
+	for _, interval := range intervals {
+		val = BinarySearch(interval, val)
 	}
 	return val
 }
