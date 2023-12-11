@@ -4,35 +4,22 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/kevslinger/advent-of-code-2023/runner"
 )
 
 func RunDay7(path string) {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Error reading file in Day 7 Part 1: %s\n", err)
-		return
-	}
-	defer file.Close()
-
-	winnings, err := Part1(file)
+	winnings, err := runner.RunPart(path, Part1)
 	if err != nil {
 		fmt.Printf("Error procesing Day 7 Part 1: %s\n", err)
 	} else {
 		fmt.Printf("Answer to Day 7 Part 1: %d\n", winnings)
 	}
 
-	file2, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Error reading file in Day 7 Part 2: %s\n", err)
-		return
-	}
-	defer file2.Close()
-
-	winnings, err = Part2(file2)
+	winnings, err = runner.RunPart(path, Part2)
 	if err != nil {
 		fmt.Printf("Error processing Day 7 Part 2: %s\n", err)
 	} else {
