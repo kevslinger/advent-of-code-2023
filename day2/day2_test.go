@@ -13,6 +13,7 @@ func TestDay2Part1(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Error reading Day 2 Part 1 File: %s", err)
 	}
+	defer file.Close()
 
 	sum, err := Part1(file, GetMatchers())
 	if err != nil {
@@ -27,6 +28,7 @@ func TestDay2Part2(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Error reading Day 2 Part 2 File: %s", err)
 	}
+	defer file.Close()
 
 	sum, err := Part2(file, GetMatchers())
 	if err != nil {

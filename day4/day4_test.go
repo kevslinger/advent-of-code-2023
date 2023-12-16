@@ -12,6 +12,8 @@ func TestDay4Part1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error reading file for Day 4 Part 1: %s", err)
 	}
+	defer file.Close()
+
 	points, err := Part1(file)
 	if err != nil {
 		t.Fatalf("Error with processing Day 4 Part 1: %s", err)
@@ -25,6 +27,8 @@ func TestDay4Part2(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error reading file for Day 4 Part 1: %s", err)
 	}
+	defer file.Close()
+
 	points, err := Part2(file)
 	if err != nil {
 		t.Fatalf("Error with processing Day 4 Part 1: %s", err)

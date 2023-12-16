@@ -12,6 +12,8 @@ func TestDay6Part1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error reading file: %s\n", err)
 	}
+	defer file.Close()
+
 	raceProduct, err := Part1(file)
 	if err != nil {
 		t.Fatalf("Error processing Day 6 Part 1: %s\n", err)
@@ -25,6 +27,8 @@ func TestDay6Part2(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error reading file: %s\n", err)
 	}
+	defer file.Close()
+
 	raceProduct, err := Part2(file)
 	if err != nil {
 		t.Fatalf("Error processing Day 6 Part 1: %s\n", err)

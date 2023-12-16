@@ -69,9 +69,9 @@ func ParseRowsAndColumns(scanner *bufio.Scanner) Note {
 	// The scanner is currently pointing at a line we want
 	var line string = scanner.Text()
 	rows = append(rows, line)
-	var cols [][]string = make([][]string, 0)
+	var cols [][]string = make([][]string, len(line))
 	for i := 0; i < len(scanner.Text()); i++ {
-		cols = append(cols, make([]string, 0))
+		cols[i] = make([]string, 0)
 		cols[i] = append(cols[i], string(line[i]))
 	}
 	for scanner.Scan() {
@@ -85,9 +85,9 @@ func ParseRowsAndColumns(scanner *bufio.Scanner) Note {
 			cols[i] = append(cols[i], string(line[i]))
 		}
 	}
-	var joinedCols []string = make([]string, 0)
-	for _, col := range cols {
-		joinedCols = append(joinedCols, strings.Join(col, ""))
+	var joinedCols []string = make([]string, len(cols))
+	for i, col := range cols {
+		joinedCols[i] = strings.Join(col, "")
 	}
 	return Note{Rows: rows, Cols: joinedCols}
 }

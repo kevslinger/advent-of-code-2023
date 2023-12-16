@@ -12,6 +12,7 @@ func TestDay13Part1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Cannot open file for Day 13 Part 1: %s\n", err)
 	}
+	defer file.Close()
 	actual, err := Part1(file)
 	if err != nil {
 		t.Fatalf("Error processing Day 13 Part 1: %s\n", err)
@@ -25,7 +26,11 @@ func TestDay13Part2(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Cannot open file for Day 13 Part 2: %s\n", err)
 	}
+	defer file.Close()
 	actual, err := Part2(file)
+	if err != nil {
+		t.Fatalf("Error processing Day 13 Part 2: %s\n", err)
+	}
 	expected := 400
 	assert.Equal(t, expected, actual, "Expected %d but got %d\n", expected, actual)
 }

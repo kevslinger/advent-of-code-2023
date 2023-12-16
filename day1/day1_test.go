@@ -13,6 +13,8 @@ func TestDay1Part1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Cannot open file in Day 1 Part 1: %s", err)
 	}
+	defer file.Close()
+
 	sum, err := Part1(file)
 	if err != nil {
 		t.Fatalf("Error processing part 1: %s", err)
@@ -26,6 +28,8 @@ func TestDay1Part2(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Cannot open file in Day 1 Part 2: %s", err)
 	}
+	defer file.Close()
+
 	sum, err := Part2(file)
 	if err != nil {
 		log.Fatalf("Error processing part 2: %s", err)
