@@ -2,5 +2,5 @@
 
 Learning Go with Advent of Code!
 
-Last Progress Update: 11-12-2023
-Current Progress: 19/50 stars (36%)
+Last Progress Update: 16-12-2023
+Current Progress: 21/50 stars (42%)
