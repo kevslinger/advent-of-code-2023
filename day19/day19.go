@@ -105,7 +105,6 @@ func ParseParts(scanner *bufio.Scanner) ([]Part, error) {
 	parts := make([]Part, 0)
 	for scanner.Scan() {
 		line := scanner.Text()
-		fmt.Println(line)
 		part, err := ParsePart(line)
 		if err != nil {
 			return parts, err
