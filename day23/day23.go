@@ -71,7 +71,6 @@ func Part1(file io.Reader) (int, error) {
 		Empty: EmptyPos,
 	}
 	return TraverseMazeDFS(maze, dirMap), nil
-	//return TraverseMazeBFS(maze), nil
 }
 
 func Part2(file io.Reader) (int, error) {
