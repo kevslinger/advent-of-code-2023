@@ -53,12 +53,12 @@ func RunDay23(path string) {
 	} else {
 		fmt.Printf("Answer to Day 23 Part 1 is: %d\n", steps)
 	}
-	steps, err = runner.RunPart(path, Part2)
-	if err != nil {
-		fmt.Printf("Error with Day 23 Part 2: %s\n", err)
-	} else {
-		fmt.Printf("Answer to Day 23 Part 2 is: %d\n", steps)
-	}
+	// steps, err = runner.RunPart(path, Part2)
+	// if err != nil {
+	// 	fmt.Printf("Error with Day 23 Part 2: %s\n", err)
+	// } else {
+	// 	fmt.Printf("Answer to Day 23 Part 2 is: %d\n", steps)
+	// }
 }
 
 func Part1(file io.Reader) (int, error) {
