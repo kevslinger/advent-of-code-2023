@@ -9,6 +9,7 @@ import (
 	"github.com/kevslinger/advent-of-code-2023/day13"
 	"github.com/kevslinger/advent-of-code-2023/day14"
 	"github.com/kevslinger/advent-of-code-2023/day15"
+	"github.com/kevslinger/advent-of-code-2023/day16"
 	"github.com/kevslinger/advent-of-code-2023/day17"
 	"github.com/kevslinger/advent-of-code-2023/day19"
 	"github.com/kevslinger/advent-of-code-2023/day2"
@@ -39,7 +40,7 @@ func main() {
 	day13.RunDay13(GetInputDay(13))
 	day14.RunDay14(GetInputDay(14))
 	day15.RunDay15(GetInputDay(15))
-
+	day16.RunDay16(GetInputDay(16))
 	day17.Runday17(GetInputDay(17))
 
 	day19.RunDay19(GetInputDay(19))
