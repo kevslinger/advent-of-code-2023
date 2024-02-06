@@ -9,7 +9,7 @@ import (
 )
 
 func RunDay14(path string) {
-	load, err := runner.RunPart(path, Part1)
+	load, err := runner.RunPart(path, part1)
 	if err != nil {
 		fmt.Printf("Error with Day 14 Part 1: %s\n", err)
 	} else {
@@ -17,13 +17,13 @@ func RunDay14(path string) {
 	}
 }
 
-func Part1(file io.Reader) (int, error) {
-	var board []string = ParseRockBoard(file)
-	var load int = CalculateLoad(board)
+func part1(file io.Reader) (int, error) {
+	var board []string = parseRockBoard(file)
+	var load int = calculateLoad(board)
 	return load, nil
 }
 
-func ParseRockBoard(file io.Reader) []string {
+func parseRockBoard(file io.Reader) []string {
 	scanner := bufio.NewScanner(file)
 	var board []string = make([]string, 0)
 	for scanner.Scan() {
@@ -32,7 +32,7 @@ func ParseRockBoard(file io.Reader) []string {
 	return board
 }
 
-func CalculateLoad(board []string) int {
+func calculateLoad(board []string) int {
 	var highestRocks []int = make([]int, len(board[0]))
 	for i := 0; i < len(highestRocks); i++ {
 		highestRocks[i] = len(board)

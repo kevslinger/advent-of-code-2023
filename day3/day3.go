@@ -11,14 +11,14 @@ import (
 )
 
 func RunDay3(path string) {
-	sum, err := runner.RunPart(path, Part1)
+	sum, err := runner.RunPart(path, part1)
 	if err != nil {
 		fmt.Printf("Error with Day 3 Part 1: %s\n", err)
 	} else {
 		fmt.Printf("Answer to Day 3 Part 1: %d\n", sum)
 	}
 
-	sum, err = runner.RunPart(path, Part2)
+	sum, err = runner.RunPart(path, part2)
 	if err != nil {
 		fmt.Printf("Error with Day 3 Part 2: %s\n", err)
 	} else {
@@ -26,30 +26,30 @@ func RunDay3(path string) {
 	}
 }
 
-func Part1(file io.Reader) (int, error) {
-	schem, err := ParseTable(file)
+func part1(file io.Reader) (int, error) {
+	schem, err := parseTable(file)
 	if err != nil {
 		return -1, err
 	}
 
-	return schem.CalculateSumOfPartNumbers(), nil
+	return schem.calculateSumOfPartNumbers(), nil
 }
 
-func Part2(file io.Reader) (int, error) {
-	schem, err := ParseTable(file)
+func part2(file io.Reader) (int, error) {
+	schem, err := parseTable(file)
 	if err != nil {
 		return -1, err
 	}
 
-	return schem.CalculateSumOfGearRatios(), nil
+	return schem.calculateSumOfGearRatios(), nil
 }
 
-type Schematic struct {
-	Table  [][]int
-	Lookup map[int]int
+type schematic struct {
+	table  [][]int
+	lookup map[int]int
 }
 
-func ParseTable(file io.Reader) (Schematic, error) {
+func parseTable(file io.Reader) (schematic, error) {
 	scanner := bufio.NewScanner(file)
 	table := make([][]int, 0)
 	lookup := make(map[int]int)
@@ -74,7 +74,7 @@ func ParseTable(file io.Reader) (Schematic, error) {
 				}
 				partNumber, err := strconv.Atoi(line[idx:idx2])
 				if err != nil {
-					return Schematic{}, err
+					return schematic{}, err
 				}
 				// Generate ID for this part
 				partNumberId := numParts
@@ -92,13 +92,13 @@ func ParseTable(file io.Reader) (Schematic, error) {
 		}
 		table = append(table, gridLine)
 	}
-	return Schematic{table, lookup}, nil
+	return schematic{table, lookup}, nil
 }
 
-func (s *Schematic) CalculateSumOfPartNumbers() int {
+func (s *schematic) calculateSumOfPartNumbers() int {
 	directions := [][]int{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}
 	sum := 0
-	for i, row := range s.Table {
+	for i, row := range s.table {
 		for j, val := range row {
 			// 0 represents blank, < 0 represents a symbol, >0 represents parts
 			if val < 0 {
@@ -106,14 +106,14 @@ func (s *Schematic) CalculateSumOfPartNumbers() int {
 				for _, dir := range directions {
 					newI, newJ := i+dir[0], j+dir[1]
 					// Check boundaries
-					if newI >= len(s.Table) || newI < 0 || newJ >= len(row) || newJ < 0 {
+					if newI >= len(s.table) || newI < 0 || newJ >= len(row) || newJ < 0 {
 						continue
 					}
 					// Found a part!
-					if s.Table[newI][newJ] > 0 {
-						sum += s.Lookup[s.Table[newI][newJ]]
+					if s.table[newI][newJ] > 0 {
+						sum += s.lookup[s.table[newI][newJ]]
 						// Set to 0 to avoid double counting
-						s.Lookup[s.Table[newI][newJ]] = 0
+						s.lookup[s.table[newI][newJ]] = 0
 					}
 				}
 			}
@@ -122,10 +122,10 @@ func (s *Schematic) CalculateSumOfPartNumbers() int {
 	return sum
 }
 
-func (s *Schematic) CalculateSumOfGearRatios() int {
+func (s *schematic) calculateSumOfGearRatios() int {
 	directions := [][]int{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}
 	sum := 0
-	for i, row := range s.Table {
+	for i, row := range s.table {
 		for j, val := range row {
 			// -2 represents a gear ('*')
 			if val == -2 {
@@ -134,15 +134,15 @@ func (s *Schematic) CalculateSumOfGearRatios() int {
 				for _, dir := range directions {
 					newI, newJ := i+dir[0], j+dir[1]
 					// Check boundaries
-					if newI >= len(s.Table) || newI < 0 || newJ >= len(row) || newJ < 0 {
+					if newI >= len(s.table) || newI < 0 || newJ >= len(row) || newJ < 0 {
 						continue
 					}
 					// Found a part!
-					if s.Table[newI][newJ] > 0 && s.Lookup[s.Table[newI][newJ]] > 0 {
+					if s.table[newI][newJ] > 0 && s.lookup[s.table[newI][newJ]] > 0 {
 						numPartsFound++
-						gearRatio *= s.Lookup[s.Table[newI][newJ]]
+						gearRatio *= s.lookup[s.table[newI][newJ]]
 						// Set to 0 to avoid double counting
-						s.Lookup[s.Table[newI][newJ]] = 0
+						s.lookup[s.table[newI][newJ]] = 0
 					}
 				}
 				// Only include gears who have exactly 2 parts

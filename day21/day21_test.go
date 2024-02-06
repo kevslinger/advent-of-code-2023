@@ -13,7 +13,7 @@ func TestDay21Part1(t *testing.T) {
 		t.Fatalf("Error opening file in Day 21 Part 1: %s\n", err)
 	}
 	defer file.Close()
-	plots, err := Part1(file, 6)
+	plots, err := part1(file, 6)
 	if err != nil {
 		t.Fatalf("Error processing Day 21 Part 1: %s\n", err)
 	}

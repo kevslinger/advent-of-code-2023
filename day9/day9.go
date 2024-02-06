@@ -11,14 +11,14 @@ import (
 )
 
 func RunDay9(path string) {
-	sum, err := runner.RunPart(path, Part1)
+	sum, err := runner.RunPart(path, part1)
 	if err != nil {
 		fmt.Printf("Error processing Day 9 Part 1: %s\n", err)
 	} else {
 		fmt.Printf("Answer to Day 9 Part 1 is : %d\n", sum)
 	}
 
-	sum, err = runner.RunPart(path, Part2)
+	sum, err = runner.RunPart(path, part2)
 	if err != nil {
 		fmt.Printf("Error processing Day 9 Part 2: %s\n", err)
 	} else {
@@ -26,37 +26,37 @@ func RunDay9(path string) {
 	}
 }
 
-func Part1(file io.Reader) (int, error) {
+func part1(file io.Reader) (int, error) {
 	scanner := bufio.NewScanner(file)
-	numbers, err := ParseNumbers(scanner)
+	numbers, err := parseNumbers(scanner)
 	if err != nil {
 		return -1, err
 	}
 
 	sum := 0
 	for _, nums := range numbers {
-		progression := GetProgression(nums)
-		sum += GetNextNumber(progression)
+		progression := getProgression(nums)
+		sum += getNextNumber(progression)
 	}
 	return sum, nil
 }
 
-func Part2(file io.Reader) (int, error) {
+func part2(file io.Reader) (int, error) {
 	scanner := bufio.NewScanner(file)
-	numbers, err := ParseNumbers(scanner)
+	numbers, err := parseNumbers(scanner)
 	if err != nil {
 		return -1, err
 	}
 
 	sum := 0
 	for _, nums := range numbers {
-		progression := GetProgression(nums)
-		sum += GetPreviousNumber(progression)
+		progression := getProgression(nums)
+		sum += getPreviousNumber(progression)
 	}
 	return sum, nil
 }
 
-func ParseNumbers(scanner *bufio.Scanner) ([][]int, error) {
+func parseNumbers(scanner *bufio.Scanner) ([][]int, error) {
 	nums := make([][]int, 0)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -75,13 +75,13 @@ func ParseNumbers(scanner *bufio.Scanner) ([][]int, error) {
 }
 
 // BRUTE FORCE
-func GetProgression(nums []int) [][]int {
+func getProgression(nums []int) [][]int {
 	n := len(nums)
 	progression := make([][]int, 0)
 	progression = append(progression, nums)
 	curArr := nums
 	i := 1
-	for true {
+	for {
 		allZero := true
 		newArr := make([]int, n)
 		for idx := i; idx < len(curArr); idx++ {
@@ -98,10 +98,9 @@ func GetProgression(nums []int) [][]int {
 		curArr = newArr
 		i++
 	}
-	return make([][]int, 0)
 }
 
-func GetNextNumber(progression [][]int) int {
+func getNextNumber(progression [][]int) int {
 	nextNum := 0
 	for i := len(progression) - 1; i >= 0; i-- {
 		nextNum += progression[i][len(progression[i])-1]
@@ -109,7 +108,7 @@ func GetNextNumber(progression [][]int) int {
 	return nextNum
 }
 
-func GetPreviousNumber(progression [][]int) int {
+func getPreviousNumber(progression [][]int) int {
 	prevNum := 0
 	for i := len(progression) - 1; i >= 0; i-- {
 		prevNum = progression[i][i] - prevNum

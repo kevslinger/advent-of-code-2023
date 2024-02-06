@@ -14,7 +14,7 @@ func TestDay11Part1(t *testing.T) {
 	}
 	defer file.Close()
 
-	sum, err := Part1(file)
+	sum, err := part1(file)
 	if err != nil {
 		t.Fatalf("Error procesing Day 11 Part 1: %s\n", err)
 	}
@@ -39,7 +39,7 @@ func TestDay11Part2(t *testing.T) {
 				t.Errorf("Error with test %s: %s\n", testCase.TestName, err)
 			} else {
 				defer file.Close()
-				steps := Part2(file, testCase.EmptyDistance)
+				steps := part2(file, testCase.EmptyDistance)
 				assert.Equal(t, testCase.Expected, steps, "Expected %d but got %d\n", testCase.Expected, steps)
 			}
 		})

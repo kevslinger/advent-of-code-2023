@@ -12,7 +12,7 @@ import (
 )
 
 func RunDay5(path string) {
-	locationNum, err := runner.RunPart(path, Part1)
+	locationNum, err := runner.RunPart(path, part1)
 	if err != nil {
 		fmt.Printf("Error with processing Day 5 Part 1: %s\n", err)
 	} else {
@@ -20,7 +20,7 @@ func RunDay5(path string) {
 	}
 }
 
-func Part1(file io.Reader) (int, error) {
+func part1(file io.Reader) (int, error) {
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 	line := scanner.Text()
@@ -34,18 +34,13 @@ func Part1(file io.Reader) (int, error) {
 		seeds[idx] = seed
 	}
 
-	intervals := make([]ByDest, 7)
-	for i := 0; i < 7; i++ {
-		scanner.Scan()
-		m, err := ParseIntervals(scanner)
-		if err != nil {
-			return -1, err
-		}
-		intervals[i] = m
+	intervals, err := createIntervals(scanner)
+	if err != nil {
+		return -1, err
 	}
 	locationNum := -1
 	for _, seed := range seeds {
-		val := GetSeedLocation(seed, intervals)
+		val := getSeedLocation(seed, intervals)
 		if val < locationNum || locationNum < 0 {
 			locationNum = val
 		}
@@ -54,7 +49,7 @@ func Part1(file io.Reader) (int, error) {
 	return locationNum, nil
 }
 
-func Part2(file io.Reader) (int, error) {
+func part2(file io.Reader) (int, error) {
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 	line := scanner.Text()
@@ -77,15 +72,9 @@ func Part2(file io.Reader) (int, error) {
 		seeds[idx/2] = [2]int{seedStart, seedEnd}
 	}
 	//fmt.Printf("Seeds: %#v\n", seeds)
-
-	intervals := make([]ByDest, 7)
-	for i := 0; i < 7; i++ {
-		scanner.Scan()
-		m, err := ParseIntervals(scanner)
-		if err != nil {
-			return -1, err
-		}
-		intervals[i] = m
+	intervals, err := createIntervals(scanner)
+	if err != nil {
+		return -1, err
 	}
 	locationNum := -1
 	// TODO: This ends up in a loop that takes too long
@@ -94,32 +83,31 @@ func Part2(file io.Reader) (int, error) {
 	// And even smarter by computing the next pathway which will actually change anything...
 	for _, seedRange := range seeds {
 		for i := seedRange[0]; i < seedRange[0]+seedRange[1]; i++ {
-			val := GetSeedLocation(i, intervals)
+			val := getSeedLocation(i, intervals)
 			//fmt.Printf("Val is %d locationNum is %d\n", val, locationNum)
 			if val < locationNum || locationNum < 0 {
 				locationNum = val
 			}
 		}
-
 	}
 	return locationNum, nil
 }
 
-type DstToTgt struct {
+type dstToTgt struct {
 	Dest int
 	Src  int
 	Num  int
 }
 
 // Implementing sort interface
-type ByDest []DstToTgt
+type byDest []dstToTgt
 
-func (bd ByDest) Len() int           { return len(bd) }
-func (bd ByDest) Swap(i, j int)      { bd[i], bd[j] = bd[j], bd[i] }
-func (bd ByDest) Less(i, j int) bool { return bd[i].Src < bd[j].Src }
+func (bd byDest) Len() int           { return len(bd) }
+func (bd byDest) Swap(i, j int)      { bd[i], bd[j] = bd[j], bd[i] }
+func (bd byDest) Less(i, j int) bool { return bd[i].Src < bd[j].Src }
 
-func ParseIntervals(scanner *bufio.Scanner) (ByDest, error) {
-	srcToTgt := make([]DstToTgt, 0)
+func parseIntervals(scanner *bufio.Scanner) (byDest, error) {
+	srcToTgt := make([]dstToTgt, 0)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if len(line) == 0 {
@@ -138,13 +126,33 @@ func ParseIntervals(scanner *bufio.Scanner) (ByDest, error) {
 			}
 			nums[idx] = num
 		}
-		srcToTgt = append(srcToTgt, DstToTgt{Dest: nums[0], Src: nums[1], Num: nums[2]})
+		srcToTgt = append(srcToTgt, dstToTgt{Dest: nums[0], Src: nums[1], Num: nums[2]})
 	}
-	sort.Sort(ByDest(srcToTgt))
+	sort.Sort(byDest(srcToTgt))
 	return srcToTgt, nil
 }
 
-func BinarySearch(interval ByDest, val int) int {
+func createIntervals(scanner *bufio.Scanner) ([]byDest, error) {
+	intervals := make([]byDest, 7)
+	for i := 0; i < 7; i++ {
+		scanner.Scan()
+		m, err := parseIntervals(scanner)
+		if err != nil {
+			return intervals, err
+		}
+		intervals[i] = m
+	}
+	return intervals, nil
+}
+
+func getSeedLocation(val int, intervals []byDest) int {
+	for _, interval := range intervals {
+		val = binarySearch(interval, val)
+	}
+	return val
+}
+
+func binarySearch(interval byDest, val int) int {
 	leftPtr, rightPtr := 0, len(interval)-1
 	for leftPtr <= rightPtr {
 		midPt := (rightPtr + leftPtr) / 2
@@ -156,13 +164,6 @@ func BinarySearch(interval ByDest, val int) int {
 			// In range
 			return interval[midPt].Dest + (val - interval[midPt].Src)
 		}
-	}
-	return val
-}
-
-func GetSeedLocation(val int, intervals []ByDest) int {
-	for _, interval := range intervals {
-		val = BinarySearch(interval, val)
 	}
 	return val
 }

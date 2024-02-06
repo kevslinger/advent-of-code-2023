@@ -14,7 +14,7 @@ func TestDay8Part1first(t *testing.T) {
 	}
 	defer file.Close()
 
-	steps, err := Part1(file)
+	steps, err := part1(file)
 	if err != nil {
 		t.Fatalf("Error processing Day 8 Part 1_1: %s\n", err)
 	}
@@ -29,7 +29,7 @@ func TestDay8Part1second(t *testing.T) {
 	}
 	defer file.Close()
 
-	steps, err := Part1(file)
+	steps, err := part1(file)
 	if err != nil {
 		t.Fatalf("Error processing Day 8 Part 1_1: %s\n", err)
 	}

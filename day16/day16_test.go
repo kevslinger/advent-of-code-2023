@@ -14,7 +14,7 @@ func TestDay16Part1(t *testing.T) {
 	}
 	defer file.Close()
 
-	tiles, err := Part1(file)
+	tiles, err := part1(file)
 	if err != nil {
 		t.Fatalf("Error wth Day 16 Part 1: %s\n", err)
 	}
@@ -29,7 +29,7 @@ func TestDay16Part2(t *testing.T) {
 	}
 	defer file.Close()
 
-	tiles, err := Part2(file)
+	tiles, err := part2(file)
 	if err != nil {
 		t.Fatalf("Error wth Day 16 Part 1: %s\n", err)
 	}

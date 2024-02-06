@@ -9,45 +9,43 @@ import (
 	"github.com/kevslinger/advent-of-code-2023/runner"
 )
 
-type Direction byte
+type direction byte
 
 const (
-	North Direction = '^'
-	South Direction = 'v'
-	East  Direction = '>'
-	West  Direction = '<'
-	Empty Direction = '.'
+	north direction = '^'
+	south direction = 'v'
+	east  direction = '>'
+	west  direction = '<'
+	empty direction = '.'
 )
 
-var directions = []Direction{North, South, East, West}
-
-type Position struct {
-	X int
-	Y int
+type position struct {
+	x int
+	y int
 }
 
 var (
-	NorthPos Position = Position{-1, 0}
-	SouthPos Position = Position{1, 0}
-	EastPos  Position = Position{0, 1}
-	WestPos  Position = Position{0, -1}
-	EmptyPos Position = Position{0, 0}
+	northPos position = position{-1, 0}
+	southPos position = position{1, 0}
+	eastPos  position = position{0, 1}
+	westPos  position = position{0, -1}
+	EmptyPos position = position{0, 0}
 )
 
-var directionPos = []Position{NorthPos, SouthPos, EastPos, WestPos}
+var directionPos = []position{northPos, southPos, eastPos, westPos}
 
-func (p Position) add(p2 Position) Position {
-	return Position{X: p.X + p2.X, Y: p.Y + p2.Y}
+func (p position) add(p2 position) position {
+	return position{x: p.x + p2.x, y: p.y + p2.y}
 }
 
-type TraversalState struct {
-	CurPos  Position
+type traversalState struct {
+	CurPos  position
 	Steps   int
-	Visited map[Position]bool
+	Visited map[position]bool
 }
 
 func RunDay23(path string) {
-	steps, err := runner.RunPart(path, Part1)
+	steps, err := runner.RunPart(path, part1)
 	if err != nil {
 		fmt.Printf("Error with Day 23 Part 1: %s\n", err)
 	} else {
@@ -61,31 +59,31 @@ func RunDay23(path string) {
 	// }
 }
 
-func Part1(file io.Reader) (int, error) {
-	maze := ParseMaze(bufio.NewScanner(file))
-	var dirMap map[Direction]Position = map[Direction]Position{
-		North: NorthPos,
-		South: SouthPos,
-		East:  EastPos,
-		West:  WestPos,
-		Empty: EmptyPos,
+func part1(file io.Reader) (int, error) {
+	maze := parseMaze(bufio.NewScanner(file))
+	var dirMap map[direction]position = map[direction]position{
+		north: northPos,
+		south: southPos,
+		east:  eastPos,
+		west:  westPos,
+		empty: EmptyPos,
 	}
-	return TraverseMazeDFS(maze, dirMap), nil
+	return traverseMazeDFS(maze, dirMap), nil
 }
 
-func Part2(file io.Reader) (int, error) {
-	maze := ParseMaze(bufio.NewScanner(file))
-	var dirMap map[Direction]Position = map[Direction]Position{
-		North: EmptyPos,
-		South: EmptyPos,
-		East:  EmptyPos,
-		West:  EmptyPos,
-		Empty: EmptyPos,
+func part2(file io.Reader) (int, error) {
+	maze := parseMaze(bufio.NewScanner(file))
+	var dirMap map[direction]position = map[direction]position{
+		north: EmptyPos,
+		south: EmptyPos,
+		east:  EmptyPos,
+		west:  EmptyPos,
+		empty: EmptyPos,
 	}
-	return TraverseMazeDFS(maze, dirMap), nil
+	return traverseMazeDFS(maze, dirMap), nil
 }
 
-func ParseMaze(scanner *bufio.Scanner) []string {
+func parseMaze(scanner *bufio.Scanner) []string {
 	var maze []string = make([]string, 0)
 	for scanner.Scan() {
 		maze = append(maze, scanner.Text())
@@ -93,20 +91,20 @@ func ParseMaze(scanner *bufio.Scanner) []string {
 	return maze
 }
 
-func FindOpenPos(rowNum int, row string) Position {
-	return Position{X: rowNum, Y: strings.Index(row, ".")}
+func findOpenPos(rowNum int, row string) position {
+	return position{x: rowNum, y: strings.Index(row, ".")}
 }
 
 // Performing a recursive DFS proves to be rather expensive...
 // Perhaps some form of a bottom-up approach would be more efficient
-func TraverseMazeDFS(maze []string, dirMap map[Direction]Position) int {
-	endPos := FindOpenPos(len(maze)-1, maze[len(maze)-1])
-	startState := TraversalState{CurPos: FindOpenPos(0, maze[0]), Visited: make(map[Position]bool)}
-	return RecursiveTraverse(maze, startState, endPos, dirMap)
+func traverseMazeDFS(maze []string, dirMap map[direction]position) int {
+	endPos := findOpenPos(len(maze)-1, maze[len(maze)-1])
+	startState := traversalState{CurPos: findOpenPos(0, maze[0]), Visited: make(map[position]bool)}
+	return recursiveTraverse(maze, startState, endPos, dirMap)
 }
 
-func RecursiveTraverse(maze []string, curState TraversalState, endPos Position, dirMap map[Direction]Position) int {
-	if !IsInBounds(curState, maze) || maze[curState.CurPos.X][curState.CurPos.Y] == '#' {
+func recursiveTraverse(maze []string, curState traversalState, endPos position, dirMap map[direction]position) int {
+	if !IsInBounds(curState, maze) || maze[curState.CurPos.x][curState.CurPos.y] == '#' {
 		return 0
 	}
 	if curState.CurPos == endPos {
@@ -120,18 +118,18 @@ func RecursiveTraverse(maze []string, curState TraversalState, endPos Position, 
 
 	curState.Visited[curState.CurPos] = true
 	var longestTrip int
-	switch dirMap[Direction(maze[curState.CurPos.X][curState.CurPos.Y])] {
-	case NorthPos:
-		longestTrip = RecursiveTraverse(maze, TraversalState{CurPos: curState.CurPos.add(NorthPos), Steps: curState.Steps + 1, Visited: curState.Visited}, endPos, dirMap)
-	case SouthPos:
-		longestTrip = RecursiveTraverse(maze, TraversalState{CurPos: curState.CurPos.add(SouthPos), Steps: curState.Steps + 1, Visited: curState.Visited}, endPos, dirMap)
-	case EastPos:
-		longestTrip = RecursiveTraverse(maze, TraversalState{CurPos: curState.CurPos.add(EastPos), Steps: curState.Steps + 1, Visited: curState.Visited}, endPos, dirMap)
-	case WestPos:
-		longestTrip = RecursiveTraverse(maze, TraversalState{CurPos: curState.CurPos.add(WestPos), Steps: curState.Steps + 1, Visited: curState.Visited}, endPos, dirMap)
+	switch dirMap[direction(maze[curState.CurPos.x][curState.CurPos.y])] {
+	case northPos:
+		longestTrip = recursiveTraverse(maze, traversalState{CurPos: curState.CurPos.add(northPos), Steps: curState.Steps + 1, Visited: curState.Visited}, endPos, dirMap)
+	case southPos:
+		longestTrip = recursiveTraverse(maze, traversalState{CurPos: curState.CurPos.add(southPos), Steps: curState.Steps + 1, Visited: curState.Visited}, endPos, dirMap)
+	case eastPos:
+		longestTrip = recursiveTraverse(maze, traversalState{CurPos: curState.CurPos.add(eastPos), Steps: curState.Steps + 1, Visited: curState.Visited}, endPos, dirMap)
+	case westPos:
+		longestTrip = recursiveTraverse(maze, traversalState{CurPos: curState.CurPos.add(westPos), Steps: curState.Steps + 1, Visited: curState.Visited}, endPos, dirMap)
 	case EmptyPos:
 		for _, dir := range directionPos {
-			steps := RecursiveTraverse(maze, TraversalState{CurPos: curState.CurPos.add(dir), Steps: curState.Steps + 1, Visited: curState.Visited}, endPos, dirMap)
+			steps := recursiveTraverse(maze, traversalState{CurPos: curState.CurPos.add(dir), Steps: curState.Steps + 1, Visited: curState.Visited}, endPos, dirMap)
 			if steps > longestTrip {
 				longestTrip = steps
 			}
@@ -143,9 +141,9 @@ func RecursiveTraverse(maze []string, curState TraversalState, endPos Position, 
 	return longestTrip
 }
 
-func IsInBounds(state TraversalState, maze []string) bool {
+func IsInBounds(state traversalState, maze []string) bool {
 	// Check bounds
-	if state.CurPos.X < 0 || state.CurPos.X >= len(maze) || state.CurPos.Y < 0 || state.CurPos.Y >= len(maze) {
+	if state.CurPos.x < 0 || state.CurPos.x >= len(maze) || state.CurPos.y < 0 || state.CurPos.y >= len(maze) {
 		return false
 	}
 	return true

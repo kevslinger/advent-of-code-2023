@@ -4,35 +4,22 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/kevslinger/advent-of-code-2023/runner"
 )
 
 func RunDay2(path string) {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Error reading file for Day 2: %s\n", err)
-		return
-	}
-	defer file.Close()
-
-	matchers := GetMatchers()
-	sum, err := Part1(file, matchers)
+	sum, err := runner.RunPart(path, part1)
 	if err != nil {
 		fmt.Printf("Error in Day 2 Part 1: %s\n", err)
 	} else {
 		fmt.Printf("The answer to Day 2 Part 1 is: %d\n", sum)
 	}
 
-	file2, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Error reading file for Day 2: %s\n", err)
-	}
-	defer file2.Close()
-
-	sum, err = Part2(file2, matchers)
+	sum, err = runner.RunPart(path, part2)
 	if err != nil {
 		fmt.Printf("Error in Day 2 Part 2: %s\n", err)
 	} else {
@@ -40,17 +27,10 @@ func RunDay2(path string) {
 	}
 }
 
-func GetMatchers() [3]*regexp.Regexp {
-	return [3]*regexp.Regexp{
-		regexp.MustCompile("[0-9]+ red"),
-		regexp.MustCompile("[0-9]+ green"),
-		regexp.MustCompile("[0-9]+ blue"),
-	}
-}
-
-func Part1(file io.Reader, matchers [3]*regexp.Regexp) (int, error) {
+func part1(file io.Reader) (int, error) {
 	var sum int
 	gameIdMatcher := regexp.MustCompile("Game [0-9]+")
+	var matchers []*regexp.Regexp = getMatchers()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -59,7 +39,7 @@ func Part1(file io.Reader, matchers [3]*regexp.Regexp) (int, error) {
 		for idx, matcher := range matchers {
 			allBalls := matcher.FindAllString(line, -1)
 			// Red is 12, Green is 13, Blue is 14
-			isWithinCapacity, err := CheckCapacity(allBalls, 12+idx)
+			isWithinCapacity, err := checkCapacity(allBalls, 12+idx)
 			if err != nil {
 				return -1, err
 			}
@@ -71,7 +51,7 @@ func Part1(file io.Reader, matchers [3]*regexp.Regexp) (int, error) {
 		if !isCompliant {
 			continue
 		}
-		id, err := GetGameId(string(gameIdMatcher.Find([]byte(line))))
+		id, err := getGameId(string(gameIdMatcher.Find([]byte(line))))
 		if err != nil {
 			return -1, err
 		}
@@ -80,7 +60,15 @@ func Part1(file io.Reader, matchers [3]*regexp.Regexp) (int, error) {
 	return sum, nil
 }
 
-func CheckCapacity(balls []string, max int) (bool, error) {
+func getMatchers() []*regexp.Regexp {
+	return []*regexp.Regexp{
+		regexp.MustCompile("[0-9]+ red"),
+		regexp.MustCompile("[0-9]+ green"),
+		regexp.MustCompile("[0-9]+ blue"),
+	}
+}
+
+func checkCapacity(balls []string, max int) (bool, error) {
 	for _, ball := range balls {
 		num, err := strconv.Atoi(strings.Split(ball, " ")[0])
 		if err != nil {
@@ -93,7 +81,7 @@ func CheckCapacity(balls []string, max int) (bool, error) {
 	return true, nil
 }
 
-func GetGameId(line string) (int, error) {
+func getGameId(line string) (int, error) {
 	id, err := strconv.Atoi(strings.Split(line, " ")[1])
 	if err != nil {
 		return -1, err
@@ -101,8 +89,9 @@ func GetGameId(line string) (int, error) {
 	return id, nil
 }
 
-func Part2(file io.Reader, matchers [3]*regexp.Regexp) (int, error) {
+func part2(file io.Reader) (int, error) {
 	var sum int
+	var matchers []*regexp.Regexp = getMatchers()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -111,7 +100,7 @@ func Part2(file io.Reader, matchers [3]*regexp.Regexp) (int, error) {
 		for idx, matcher := range matchers {
 			allBalls := matcher.FindAllString(line, -1)
 			// Red is 12, Green is 13, Blue is 14
-			minBallsRequired, err := FindMinBallsRequired(allBalls)
+			minBallsRequired, err := findMinBallsRequired(allBalls)
 			if err != nil {
 				return -1, err
 			}
@@ -122,7 +111,7 @@ func Part2(file io.Reader, matchers [3]*regexp.Regexp) (int, error) {
 	return sum, nil
 }
 
-func FindMinBallsRequired(balls []string) (int, error) {
+func findMinBallsRequired(balls []string) (int, error) {
 	minBalls := 0
 	for _, ball := range balls {
 		num, err := strconv.Atoi(strings.Split(ball, " ")[0])

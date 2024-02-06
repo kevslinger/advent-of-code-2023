@@ -12,14 +12,14 @@ import (
 )
 
 func RunDay7(path string) {
-	winnings, err := runner.RunPart(path, Part1)
+	winnings, err := runner.RunPart(path, part1)
 	if err != nil {
 		fmt.Printf("Error procesing Day 7 Part 1: %s\n", err)
 	} else {
 		fmt.Printf("Answer to Day 7 Part 1: %d\n", winnings)
 	}
 
-	winnings, err = runner.RunPart(path, Part2)
+	winnings, err = runner.RunPart(path, part2)
 	if err != nil {
 		fmt.Printf("Error processing Day 7 Part 2: %s\n", err)
 	} else {
@@ -27,18 +27,18 @@ func RunDay7(path string) {
 	}
 }
 
-func Part1(file io.Reader) (int, error) {
+func part1(file io.Reader) (int, error) {
 	scanner := bufio.NewScanner(file)
-	hands := make([]Hand, 0)
+	hands := make([]hand, 0)
 	for scanner.Scan() {
 		line := scanner.Text()
-		hand, err := NewHand(line)
+		hand, err := newHand(line)
 		if err != nil {
 			return -1, err
 		}
 		hands = append(hands, hand)
 	}
-	sort.Sort(ByRank(hands))
+	sort.Sort(byRank(hands))
 	winnings := 0
 	for idx, hand := range hands {
 		winnings += (idx + 1) * hand.Bid
@@ -46,19 +46,19 @@ func Part1(file io.Reader) (int, error) {
 	return winnings, nil
 }
 
-func Part2(file io.Reader) (int, error) {
+func part2(file io.Reader) (int, error) {
 	scanner := bufio.NewScanner(file)
-	hands := make([]Hand, 0)
+	hands := make([]hand, 0)
 	for scanner.Scan() {
 		line := scanner.Text()
-		hand, err := NewHand(line)
+		hand, err := newHand(line)
 		if err != nil {
 			return -1, err
 		}
-		hand.UpdateRankWithJoker()
+		hand.updateRankWithJoker()
 		hands = append(hands, hand)
 	}
-	sort.Sort(ByRank(hands))
+	sort.Sort(byRank(hands))
 	winnings := 0
 	for idx, hand := range hands {
 		winnings += (idx + 1) * hand.Bid
@@ -66,28 +66,28 @@ func Part2(file io.Reader) (int, error) {
 	return winnings, nil
 }
 
-type Hand struct {
+type hand struct {
 	Cards []int
 	Rank  int
 	Bid   int
 }
 
-func NewHand(line string) (Hand, error) {
+func newHand(line string) (hand, error) {
 	toks := strings.Split(line, " ")
 	// toks[0] is hand, toks[1] is bid
-	hand, err := ParseHand(toks[0])
+	handSlice, err := parseHand(toks[0])
 	if err != nil {
-		return Hand{}, err
+		return hand{}, err
 	}
-	rank := ParseHandRank(hand)
-	bid, err := ParseBid(toks[1])
+	rank := parseHandRank(handSlice)
+	bid, err := parseBid(toks[1])
 	if err != nil {
-		return Hand{}, err
+		return hand{}, err
 	}
-	return Hand{hand, rank, bid}, nil
+	return hand{handSlice, rank, bid}, nil
 }
 
-func ParseHand(handStr string) ([]int, error) {
+func parseHand(handStr string) ([]int, error) {
 	hand := make([]int, 5)
 	for idx, card := range handStr {
 		switch card {
@@ -112,9 +112,9 @@ func ParseHand(handStr string) ([]int, error) {
 	return hand, nil
 }
 
-func ParseHandRank(hand []int) int {
+func parseHandRank(handSlice []int) int {
 	m := make(map[int]int, 0)
-	for _, card := range hand {
+	for _, card := range handSlice {
 		m[card]++
 	}
 	var handRank int
@@ -134,11 +134,11 @@ func ParseHandRank(hand []int) int {
 	return handRank
 }
 
-func ParseBid(bidStr string) (int, error) {
+func parseBid(bidStr string) (int, error) {
 	return strconv.Atoi(bidStr)
 }
 
-func (h *Hand) UpdateRankWithJoker() {
+func (h *hand) updateRankWithJoker() {
 	m := make(map[int]int, 0)
 	for idx, card := range h.Cards {
 		if card == 11 {
@@ -184,11 +184,11 @@ func (h *Hand) UpdateRankWithJoker() {
 	}
 }
 
-type ByRank []Hand
+type byRank []hand
 
-func (r ByRank) Len() int      { return len(r) }
-func (r ByRank) Swap(i, j int) { r[i], r[j] = r[j], r[i] }
-func (r ByRank) Less(i, j int) bool {
+func (r byRank) Len() int      { return len(r) }
+func (r byRank) Swap(i, j int) { r[i], r[j] = r[j], r[i] }
+func (r byRank) Less(i, j int) bool {
 	if r[i].Rank != r[j].Rank {
 		return r[i].Rank < r[j].Rank
 	}

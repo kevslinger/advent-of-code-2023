@@ -12,14 +12,14 @@ import (
 )
 
 func RunDay4(path string) {
-	points, err := runner.RunPart(path, Part1)
+	points, err := runner.RunPart(path, part1)
 	if err != nil {
 		fmt.Printf("Error processing Day 4 Part 1: %s\n", err)
 	} else {
 		fmt.Printf("The answer to Day 4 Part 1 is: %d\n", points)
 	}
 
-	scratchCards, err := runner.RunPart(path, Part2)
+	scratchCards, err := runner.RunPart(path, part2)
 	if err != nil {
 		fmt.Printf("Error processing Day 4 Part 2: %s\n", err)
 	} else {
@@ -27,27 +27,24 @@ func RunDay4(path string) {
 	}
 }
 
-func Part1(file io.Reader) (int, error) {
+func part1(file io.Reader) (int, error) {
 	scanner := bufio.NewScanner(file)
 	totalPoints := 0
 	for scanner.Scan() {
-		points := 0
 		line := scanner.Text()
 
-		gameStrings := ParseGameCard(line)
+		gameStrings := parseGameCard(line)
 
-		winningNumbers, err := GetNumbersFromString(gameStrings[0])
+		winningNumbers, err := getNumbersFromString(gameStrings[0])
 		if err != nil {
 			return -1, nil
 		}
-		winningMap := make(map[int]bool)
-		for _, num := range winningNumbers {
-			winningMap[num] = true
-		}
-		ourNumbers, err := GetNumbersFromString(gameStrings[1])
+		winningMap := createWinningMap(winningNumbers)
+		ourNumbers, err := getNumbersFromString(gameStrings[1])
 		if err != nil {
 			return -1, nil
 		}
+		points := 0
 		for _, val := range ourNumbers {
 			_, ok := winningMap[val]
 			if ok {
@@ -63,34 +60,30 @@ func Part1(file io.Reader) (int, error) {
 	return totalPoints, nil
 }
 
-func Part2(file io.Reader) (int, error) {
+func part2(file io.Reader) (int, error) {
 	scanner := bufio.NewScanner(file)
 	totalPoints := 0
 	wonScratchcards := make(map[int]int)
 	for scanner.Scan() {
-		// Include the card we started with
-		points := 0
 		line := scanner.Text()
 
-		gameId, err := GetGameId(line)
+		gameId, err := getGameId(line)
 		wonScratchcards[gameId]++
 		if err != nil {
 			return -1, nil
 		}
-		gameStrings := ParseGameCard(line)
+		gameStrings := parseGameCard(line)
 
-		winningNumbers, err := GetNumbersFromString(gameStrings[0])
+		winningNumbers, err := getNumbersFromString(gameStrings[0])
 		if err != nil {
 			return -1, nil
 		}
-		winningMap := make(map[int]bool)
-		for _, num := range winningNumbers {
-			winningMap[num] = true
-		}
-		ourNumbers, err := GetNumbersFromString(gameStrings[1])
+		winningMap := createWinningMap(winningNumbers)
+		ourNumbers, err := getNumbersFromString(gameStrings[1])
 		if err != nil {
 			return -1, nil
 		}
+		points := 0
 		for _, val := range ourNumbers {
 			_, ok := winningMap[val]
 			if ok {
@@ -105,13 +98,13 @@ func Part2(file io.Reader) (int, error) {
 	return totalPoints, nil
 }
 
-func GetGameId(card string) (int, error) {
+func getGameId(card string) (int, error) {
 	gameIdMatcher := regexp.MustCompile("[0-9]+:")
 	gameId := gameIdMatcher.FindAllString(card, -1)[0]
 	return strconv.Atoi(gameId[:len(gameId)-1])
 }
 
-func ParseGameCard(card string) [2][]string {
+func parseGameCard(card string) [2][]string {
 	afterCard := strings.Split(card, ": ")[1]
 	numberSplit := strings.Split(afterCard, "|")
 
@@ -121,7 +114,7 @@ func ParseGameCard(card string) [2][]string {
 	return [2][]string{winningStrings, ourStrings}
 }
 
-func GetNumbersFromString(numStr []string) ([]int, error) {
+func getNumbersFromString(numStr []string) ([]int, error) {
 	nums := make([]int, len(numStr))
 	for idx, str := range numStr {
 		num, err := strconv.Atoi(str)
@@ -131,4 +124,12 @@ func GetNumbersFromString(numStr []string) ([]int, error) {
 		nums[idx] = num
 	}
 	return nums, nil
+}
+
+func createWinningMap(winningNumbers []int) map[int]bool {
+	winningMap := make(map[int]bool)
+	for _, num := range winningNumbers {
+		winningMap[num] = true
+	}
+	return winningMap
 }

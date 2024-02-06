@@ -15,7 +15,7 @@ func RunDay21(path string) {
 	}
 	defer file.Close()
 
-	plots, err := Part1(file, 64)
+	plots, err := part1(file, 64)
 	if err != nil {
 		fmt.Printf("Error with Day 21 Part 1: %s\n", err)
 	} else {
@@ -23,44 +23,41 @@ func RunDay21(path string) {
 	}
 }
 
-type Position struct {
-	X int
-	Y int
+type position struct {
+	x int
+	y int
 }
 
-func (p Position) add(p2 Position) Position {
-	return Position{p.X + p2.X, p.Y + p2.Y}
+func (p position) add(p2 position) position {
+	return position{p.x + p2.x, p.y + p2.y}
 }
 
-type Direction int
+type direction int
 
 const (
-	Dummy Direction = iota
-	North
-	South
-	East
-	West
+	north direction = iota + 1
+	south
+	east
+	west
 )
 
-var directions = []Direction{North, South, East, West}
-
-var dirMap map[Direction]Position = map[Direction]Position{
-	North: {-1, 0},
-	South: {1, 0},
-	East:  {0, 1},
-	West:  {0, -1},
+var dirMap map[direction]position = map[direction]position{
+	north: {-1, 0},
+	south: {1, 0},
+	east:  {0, 1},
+	west:  {0, -1},
 }
 
-func Part1(file io.Reader, steps int) (int, error) {
-	var garden []string = ParseGarden(file)
-	startPosition, err := GetStartPos(garden)
+func part1(file io.Reader, steps int) (int, error) {
+	var garden []string = parseGarden(file)
+	startposition, err := getStartPos(garden)
 	if err != nil {
 		return -1, err
 	}
-	return CalculateGardenSpots(garden, startPosition, steps), nil
+	return calculateGardenSpots(garden, startposition, steps), nil
 }
 
-func ParseGarden(file io.Reader) []string {
+func parseGarden(file io.Reader) []string {
 	garden := make([]string, 0)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -69,23 +66,23 @@ func ParseGarden(file io.Reader) []string {
 	return garden
 }
 
-func GetStartPos(garden []string) (Position, error) {
+func getStartPos(garden []string) (position, error) {
 	for i, row := range garden {
 		for j, char := range row {
 			if char == 'S' {
-				return Position{X: i, Y: j}, nil
+				return position{x: i, y: j}, nil
 			}
 		}
 	}
-	return Position{}, fmt.Errorf("Cannot find starting position in garden")
+	return position{}, fmt.Errorf("cannot find starting position in garden")
 }
 
-func CalculateGardenSpots(garden []string, startPos Position, steps int) int {
-	queue := make([]Position, 0)
+func calculateGardenSpots(garden []string, startPos position, steps int) int {
+	queue := make([]position, 0)
 	queue = append(queue, startPos)
 	for i := 0; i < steps; i++ {
 		queueLen := len(queue)
-		newCoveredSpaces := make(map[Position]bool)
+		newCoveredSpaces := make(map[position]bool)
 		for j := 0; j < queueLen; j++ {
 			curSpace := queue[0]
 			queue = queue[1:]
@@ -96,7 +93,7 @@ func CalculateGardenSpots(garden []string, startPos Position, steps int) int {
 
 				// Don't want to add 2 of the same space
 				_, ok := newCoveredSpaces[newPos]
-				if !IsInBounds(newPos, garden) || garden[newPos.X][newPos.Y] == '#' || ok {
+				if !isInBounds(newPos, garden) || garden[newPos.x][newPos.y] == '#' || ok {
 					continue
 				}
 				queue = append(queue, newPos)
@@ -107,6 +104,6 @@ func CalculateGardenSpots(garden []string, startPos Position, steps int) int {
 	return len(queue)
 }
 
-func IsInBounds(pos Position, garden []string) bool {
-	return pos.X >= 0 && pos.X < len(garden) && pos.Y >= 0 && pos.Y <= len(garden[pos.X])
+func isInBounds(pos position, garden []string) bool {
+	return pos.x >= 0 && pos.x < len(garden) && pos.y >= 0 && pos.y <= len(garden[pos.x])
 }

@@ -14,7 +14,7 @@ func TestDay15Part1(t *testing.T) {
 	}
 	defer file.Close()
 
-	sum, err := Part1(file)
+	sum, err := part1(file)
 	if err != nil {
 		t.Fatalf("Error processing Day 15 Part 1: %s\n", err)
 	}
@@ -29,7 +29,7 @@ func TestDay15Part2(t *testing.T) {
 	}
 	defer file.Close()
 
-	power, err := Part2(file)
+	power, err := part2(file)
 	if err != nil {
 		t.Fatalf("Error processing Day 15 Part 1: %s\n", err)
 	}

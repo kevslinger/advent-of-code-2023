@@ -14,7 +14,7 @@ func TestDay14Part1(t *testing.T) {
 	}
 	defer file.Close()
 
-	load, err := Part1(file)
+	load, err := part1(file)
 	if err != nil {
 		t.Fatalf("Error processing Day 14 Part 1: %s\n", err)
 	}

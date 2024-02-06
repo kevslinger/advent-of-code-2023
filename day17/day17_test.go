@@ -15,7 +15,7 @@ func TestDay17Part1(t *testing.T) {
 	}
 	defer file.Close()
 
-	heatLoss, err := Part1(file)
+	heatLoss, err := part1(file)
 	if err != nil {
 		t.Fatalf("Error processing Day 17 Part 1: %s\n", err)
 	}
@@ -34,7 +34,7 @@ func TestDay17Part2(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.TestName, func(t *testing.T) {
-			heatLoss, err := runner.RunPart(testCase.Path, Part2)
+			heatLoss, err := runner.RunPart(testCase.Path, part2)
 			if err != nil {
 				t.Errorf("Error with test %s: %s\n", testCase.TestName, err)
 			} else {

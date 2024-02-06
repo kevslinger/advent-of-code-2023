@@ -18,7 +18,7 @@ func TestDay10Part1(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.TestName, func(t *testing.T) {
-			steps, err := runner.RunPart(testCase.Path, Part1)
+			steps, err := runner.RunPart(testCase.Path, part1)
 			if err != nil {
 				t.Errorf("Error with test %s: %s\n", testCase.TestName, err)
 			} else {

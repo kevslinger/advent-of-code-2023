@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log"
 	"math"
 	"os"
 	"strings"
@@ -12,7 +13,7 @@ import (
 )
 
 func RunDay11(path string) {
-	sum, err := runner.RunPart(path, Part1)
+	sum, err := runner.RunPart(path, part1)
 	if err != nil {
 		fmt.Printf("Error with Day 11 Part 1: %s\n", err)
 	} else {
@@ -21,29 +22,32 @@ func RunDay11(path string) {
 
 	file, err := os.Open(path)
 	if err != nil {
-		fmt.Printf("Error reading file in Day 11 Part 2: %s\n", err)
-		return
+		log.Fatalf("Error with Day 11 Part 2: %s\n", err)
 	}
 	defer file.Close()
-	sum = Part2(file, 1_000_000)
-	fmt.Printf("Answer to Day 11 Part 2 is: %d\n", sum)
+	sum = part2(file, 1_000_000)
+	if err != nil {
+		fmt.Printf("Error with Day 11 Part 2: %s\n", err)
+	} else {
+		fmt.Printf("Answer to Day 11 Part 2 is: %d\n", sum)
+	}
 }
 
-type Galaxy struct {
-	X int
-	Y int
+type galaxy struct {
+	x int
+	y int
 }
 
-func Part1(file io.Reader) (int, error) {
+func part1(file io.Reader) (int, error) {
 	universe := ScanUniverse(file)
-	galaxies := ParseGalaxies(universe, 2)
-	return GetSumGalaxyDistances(galaxies), nil
+	galaxies := parseGalaxies(universe, 2)
+	return getSumGalaxyDistances(galaxies), nil
 }
 
-func Part2(file io.Reader, emptyDistance int) int {
+func part2(file io.Reader, emptyDistance int) int {
 	universe := ScanUniverse(file)
-	galaxies := ParseGalaxies(universe, emptyDistance)
-	return GetSumGalaxyDistances(galaxies)
+	galaxies := parseGalaxies(universe, emptyDistance)
+	return getSumGalaxyDistances(galaxies)
 }
 
 func ScanUniverse(file io.Reader) []string {
@@ -55,11 +59,29 @@ func ScanUniverse(file io.Reader) []string {
 	return universe
 }
 
-func ParseGalaxies(universe []string, emptyDistance int) []*Galaxy {
-	galaxies := make([]*Galaxy, 0)
+func parseGalaxies(universe []string, emptyDistance int) []*galaxy {
+	galaxyMap := processUniverseRows(universe, emptyDistance)
+	galaxies := make([]*galaxy, 0)
+	emptyColCounter := 0
+	for j := 0; j < len(universe[0]); j++ {
+		sawgalaxy := false
+		for i := 0; i < len(universe); i++ {
+			if universe[i][j] == '#' {
+				sawgalaxy = true
+				galaxyMap[j][0].y = j + emptyColCounter
+				galaxies = append(galaxies, galaxyMap[j][0])
+				galaxyMap[j] = galaxyMap[j][1:]
+			}
+		}
+		if !sawgalaxy {
+			emptyColCounter += emptyDistance - 1
+		}
+	}
+	return galaxies
+}
 
-	galaxyMap := make(map[int][]*Galaxy)
-
+func processUniverseRows(universe []string, emptyDistance int) map[int][]*galaxy {
+	galaxyMap := make(map[int][]*galaxy)
 	emptyRowCounter := 0
 	for idx, row := range universe {
 		if !strings.Contains(row, "#") {
@@ -70,40 +92,25 @@ func ParseGalaxies(universe []string, emptyDistance int) []*Galaxy {
 			if row[j] == '#' {
 				_, ok := galaxyMap[j]
 				if !ok {
-					galaxyMap[j] = make([]*Galaxy, 0)
+					galaxyMap[j] = make([]*galaxy, 0)
 				}
-				galaxyMap[j] = append(galaxyMap[j], &Galaxy{X: idx + emptyRowCounter})
+				galaxyMap[j] = append(galaxyMap[j], &galaxy{x: idx + emptyRowCounter})
 			}
 		}
 	}
-	emptyColCounter := 0
-	for j := 0; j < len(universe[0]); j++ {
-		sawGalaxy := false
-		for i := 0; i < len(universe); i++ {
-			if universe[i][j] == '#' {
-				sawGalaxy = true
-				galaxyMap[j][0].Y = j + emptyColCounter
-				galaxies = append(galaxies, galaxyMap[j][0])
-				galaxyMap[j] = galaxyMap[j][1:]
-			}
-		}
-		if !sawGalaxy {
-			emptyColCounter += emptyDistance - 1
-		}
-	}
-	return galaxies
+	return galaxyMap
 }
 
-func GetSumGalaxyDistances(galaxies []*Galaxy) int {
+func getSumGalaxyDistances(galaxies []*galaxy) int {
 	sum := 0
 	for i := 0; i < len(galaxies); i++ {
 		for j := i + 1; j < len(galaxies); j++ {
-			sum += ManhattanDistance(galaxies[i], galaxies[j])
+			sum += manhattanDistance(galaxies[i], galaxies[j])
 		}
 	}
 	return sum
 }
 
-func ManhattanDistance(g1, g2 *Galaxy) int {
-	return int(math.Abs(float64(g2.X)-float64(g1.X))) + int(math.Abs(float64(g2.Y)-float64(g1.Y)))
+func manhattanDistance(g1, g2 *galaxy) int {
+	return int(math.Abs(float64(g2.x)-float64(g1.x))) + int(math.Abs(float64(g2.y)-float64(g1.y)))
 }

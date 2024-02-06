@@ -12,146 +12,146 @@ import (
 )
 
 func RunDay19(path string) {
-	rating, err := runner.RunPart(path, Part1)
+	rating, err := runner.RunPart(path, part1)
 	if err != nil {
-		fmt.Printf("Error with Day 19 Part 1: %s\n", err)
+		fmt.Printf("Error with Day 19 part 1: %s\n", err)
 	} else {
-		fmt.Printf("Answer for Day 19 Part 1: %d\n", rating)
+		fmt.Printf("Answer for Day 19 part 1: %d\n", rating)
 	}
 }
 
-type Condition struct {
-	Category   byte
-	Operation  byte
-	Comparison int
-	Result     string
+type condition struct {
+	category   byte
+	operation  byte
+	comparison int
+	result     string
 }
 
-func (c Condition) Check(part Part) bool {
-	if c.Operation == '<' {
-		return part.Values[c.Category] < c.Comparison
+func (c condition) Check(p part) bool {
+	if c.operation == '<' {
+		return p.Values[c.category] < c.comparison
 	} else {
-		return part.Values[c.Category] > c.Comparison
+		return p.Values[c.category] > c.comparison
 	}
 }
 
-type Workflow struct {
-	Name       string
-	Conditions []Condition
-	Default    string
+type workflow struct {
+	name       string
+	conditions []condition
+	def        string
 }
 
-type Part struct {
+type part struct {
 	Values map[byte]int
 }
 
-func (p Part) GetRating() int {
+func (p part) GetRating() int {
 	return p.Values['x'] + p.Values['m'] + p.Values['a'] + p.Values['s']
 }
 
-func Part1(file io.Reader) (int, error) {
+func part1(file io.Reader) (int, error) {
 	scanner := bufio.NewScanner(file)
-	workflows, err := ParseWorkflows(scanner)
+	workflows, err := parseWorkflows(scanner)
 	if err != nil {
 		return -1, err
 	}
-	parts, err := ParseParts(scanner)
+	parts, err := parseParts(scanner)
 	if err != nil {
 		return -1, err
 	}
-	return ComputeRatings(workflows, parts), nil
+	return computeRatings(workflows, parts), nil
 }
 
-func ParseWorkflows(scanner *bufio.Scanner) (map[string]Workflow, error) {
-	workflows := make(map[string]Workflow)
+func parseWorkflows(scanner *bufio.Scanner) (map[string]workflow, error) {
+	workflows := make(map[string]workflow)
 	for scanner.Scan() {
 		line := scanner.Text()
 		// Split between workflows and parts
 		if len(line) == 0 {
 			break
 		}
-		workflow, err := ParseWorkflow(line)
+		wflow, err := parseWorkflow(line)
 		if err != nil {
-			return make(map[string]Workflow), err
+			return make(map[string]workflow), err
 		}
-		workflows[workflow.Name] = workflow
+		workflows[wflow.name] = wflow
 	}
 	return workflows, nil
 }
 
-func ParseWorkflow(line string) (Workflow, error) {
+func parseWorkflow(line string) (workflow, error) {
 	numberMatcher := regexp.MustCompile("[0-9]+")
 	// Need to chop off }
 	toks := strings.Split(line[:len(line)-1], "{")
 	name := toks[0]
 	conditionStrs := strings.Split(toks[1], ",")
-	conditions := make([]Condition, len(conditionStrs)-1)
+	conditions := make([]condition, len(conditionStrs)-1)
 	for idx, condStr := range conditionStrs[:len(conditionStrs)-1] {
 		cat := condStr[0]
 		op := condStr[1]
 		compStr := numberMatcher.FindString(condStr)
 		comparison, err := strconv.Atoi(compStr)
 		if err != nil {
-			return Workflow{}, err
+			return workflow{}, err
 		}
 		result := strings.Split(condStr, ":")[1]
-		conditions[idx] = Condition{Category: cat, Operation: op, Comparison: comparison, Result: result}
+		conditions[idx] = condition{category: cat, operation: op, comparison: comparison, result: result}
 	}
 
-	return Workflow{Name: name, Conditions: conditions, Default: conditionStrs[len(conditionStrs)-1]}, nil
+	return workflow{name: name, conditions: conditions, def: conditionStrs[len(conditionStrs)-1]}, nil
 }
 
-func ParseParts(scanner *bufio.Scanner) ([]Part, error) {
-	parts := make([]Part, 0)
+func parseParts(scanner *bufio.Scanner) ([]part, error) {
+	parts := make([]part, 0)
 	for scanner.Scan() {
 		line := scanner.Text()
-		part, err := ParsePart(line)
+		p, err := parsePart(line)
 		if err != nil {
 			return parts, err
 		}
-		parts = append(parts, part)
+		parts = append(parts, p)
 	}
 	return parts, nil
 }
 
-func ParsePart(line string) (Part, error) {
+func parsePart(line string) (part, error) {
 	categories := strings.Split(line[1:len(line)-1], ",")
 	catMap := make(map[byte]int)
 	for _, cat := range categories {
 		num, err := strconv.Atoi(cat[2:])
 		if err != nil {
-			return Part{}, err
+			return part{}, err
 		}
 		catMap[cat[0]] = num
 	}
-	return Part{catMap}, nil
+	return part{catMap}, nil
 }
 
-func ComputeRatings(workflows map[string]Workflow, parts []Part) int {
+func computeRatings(workflows map[string]workflow, parts []part) int {
 	var ratingSum int
-	for _, part := range parts {
-		ratingSum += ComputeRating(workflows, part)
+	for _, p := range parts {
+		ratingSum += ComputeRating(workflows, p)
 	}
 	return ratingSum
 }
 
-func ComputeRating(workflows map[string]Workflow, part Part) int {
+func ComputeRating(workflows map[string]workflow, p part) int {
 	var result string = "in"
 	for result != "A" && result != "R" {
-		result = ProcessWorkflow(workflows[result], part)
+		result = Processworkflow(workflows[result], p)
 	}
 	if result == "A" {
-		return part.GetRating()
+		return p.GetRating()
 	} else {
 		return 0
 	}
 }
 
-func ProcessWorkflow(workflow Workflow, part Part) string {
-	for _, cond := range workflow.Conditions {
-		if cond.Check(part) {
-			return cond.Result
+func Processworkflow(workflow workflow, p part) string {
+	for _, cond := range workflow.conditions {
+		if cond.Check(p) {
+			return cond.result
 		}
 	}
-	return workflow.Default
+	return workflow.def
 }

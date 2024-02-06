@@ -4,18 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"regexp"
+
+	"github.com/kevslinger/advent-of-code-2023/runner"
 )
 
 func RunDay8(path string) {
-	file, err := os.Open(path)
-	if err != nil {
-		fmt.Printf("Cannot open file in Day 8 Part 1: %s\n", err)
-	}
-	defer file.Close()
-
-	steps, err := Part1(file)
+	steps, err := runner.RunPart(path, part1)
 	if err != nil {
 		fmt.Printf("Error processing Day 8 Part 1: %s\n", err)
 	} else {
@@ -23,12 +18,12 @@ func RunDay8(path string) {
 	}
 }
 
-func Part1(file io.Reader) (int, error) {
+func part1(file io.Reader) (int, error) {
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 	directions := scanner.Text()
 
-	nodeMap := ParseNodeMap(scanner)
+	nodeMap := parseNodeMap(scanner)
 	curNode := nodeMap["AAA"]
 	numSteps := 0
 	for curNode.Name != "ZZZ" {
@@ -43,9 +38,9 @@ func Part1(file io.Reader) (int, error) {
 	return numSteps, nil
 }
 
-func ParseNodeMap(scanner *bufio.Scanner) map[string]*Node {
+func parseNodeMap(scanner *bufio.Scanner) map[string]*node {
 	nodeMatcher := regexp.MustCompile("[A-Z]{3}")
-	nodeMap := make(map[string]*Node, 0)
+	nodeMap := make(map[string]*node, 0)
 	for scanner.Scan() {
 		// Skip area between directions and grid
 		line := scanner.Text()
@@ -53,34 +48,34 @@ func ParseNodeMap(scanner *bufio.Scanner) map[string]*Node {
 			continue
 		}
 		nodeNames := nodeMatcher.FindAllString(line, -1)
-		node, ok := nodeMap[nodeNames[0]]
+		n, ok := nodeMap[nodeNames[0]]
 		if !ok {
-			node = &Node{Name: nodeNames[0]}
-			nodeMap[nodeNames[0]] = node
+			n = &node{Name: nodeNames[0]}
+			nodeMap[nodeNames[0]] = n
 		}
 		left, ok := nodeMap[nodeNames[1]]
 		if !ok {
-			left = &Node{Name: nodeNames[1]}
+			left = &node{Name: nodeNames[1]}
 			nodeMap[nodeNames[1]] = left
 		}
 		right, ok := nodeMap[nodeNames[2]]
 		if !ok {
-			right = &Node{Name: nodeNames[2]}
+			right = &node{Name: nodeNames[2]}
 			nodeMap[nodeNames[2]] = right
 		}
-		node.Left = left
-		node.Right = right
+		n.Left = left
+		n.Right = right
 	}
 	return nodeMap
 }
 
-type Node struct {
+type node struct {
 	Name  string
-	Left  *Node
-	Right *Node
+	Left  *node
+	Right *node
 }
 
-func (n Node) String() string {
+func (n node) String() string {
 	left := ""
 	if n.Left != nil {
 		left = n.Left.Name
